@@ -38,5 +38,7 @@ public class Beer {
 
     @Column(updatable = false)
     private LocalDateTime createdDate;
+
+    @Column
     private LocalDateTime updateDate;
 }
