@@ -24,10 +24,11 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -153,5 +154,81 @@ class BeerControllerTest {
                 .andExpect(jsonPath("$.beerName", is("New Beer")));
 
         verify(beerService).saveBeer(any(Beer.class));
+    }
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        Beer beerToUpdate = Beer.builder()
+                .beerName("Updated Beer")
+                .beerStyle("Updated Style")
+                .upc("999888")
+                .price(new BigDecimal("15.99"))
+                .quantityOnHand(75)
+                .build();
+
+        Beer updatedBeer = Beer.builder()
+                .id(1)
+                .beerName("Updated Beer")
+                .beerStyle("Updated Style")
+                .upc("999888")
+                .price(new BigDecimal("15.99"))
+                .quantityOnHand(75)
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+
+        given(beerService.updateBeer(anyInt(), any(Beer.class))).willReturn(Optional.of(updatedBeer));
+
+        mockMvc.perform(put("/api/v1/beers/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerToUpdate)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.beerName", is("Updated Beer")))
+                .andExpect(jsonPath("$.beerStyle", is("Updated Style")));
+
+        verify(beerService).updateBeer(anyInt(), any(Beer.class));
+    }
+
+    @Test
+    void testUpdateBeerNotFound() throws Exception {
+        Beer beerToUpdate = Beer.builder()
+                .beerName("Updated Beer")
+                .beerStyle("Updated Style")
+                .upc("999888")
+                .price(new BigDecimal("15.99"))
+                .quantityOnHand(75)
+                .build();
+
+        given(beerService.updateBeer(eq(999), any(Beer.class))).willReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/v1/beers/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerToUpdate)))
+                .andExpect(status().isNotFound());
+
+        verify(beerService).updateBeer(eq(999), any(Beer.class));
+    }
+
+    @Test
+    void testDeleteBeer() throws Exception {
+        given(beerService.deleteBeer(1)).willReturn(true);
+
+        mockMvc.perform(delete("/api/v1/beers/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).deleteBeer(1);
+    }
+
+    @Test
+    void testDeleteBeerNotFound() throws Exception {
+        given(beerService.deleteBeer(999)).willReturn(false);
+
+        mockMvc.perform(delete("/api/v1/beers/999")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(beerService).deleteBeer(999);
     }
 }

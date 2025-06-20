@@ -25,7 +25,7 @@ public class BeerController {
     @GetMapping("/{beerId}")
     public ResponseEntity<Beer> getBeerById(@PathVariable("beerId") Integer beerId) {
         Optional<Beer> beerOptional = beerService.getBeerById(beerId);
-        
+
         return beerOptional
                 .map(beer -> new ResponseEntity<>(beer, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -35,5 +35,23 @@ public class BeerController {
     public ResponseEntity<Beer> createBeer(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveBeer(beer);
         return new ResponseEntity<>(savedBeer, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{beerId}")
+    public ResponseEntity<Beer> updateBeer(@PathVariable("beerId") Integer beerId, @RequestBody Beer beer) {
+        Optional<Beer> updatedBeerOptional = beerService.updateBeer(beerId, beer);
+
+        return updatedBeerOptional
+                .map(updatedBeer -> new ResponseEntity<>(updatedBeer, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{beerId}")
+    public ResponseEntity<Void> deleteBeer(@PathVariable("beerId") Integer beerId) {
+        boolean deleted = beerService.deleteBeer(beerId);
+
+        return deleted ? 
+                new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
