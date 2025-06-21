@@ -12,41 +12,8 @@ This document outlines the requirements for refactoring the Beer API to use Data
 ## Technical Requirements
 
 ### 1. Add Required Dependencies
-- Add MapStruct dependencies to pom.xml:
-  ```xml
-  <!-- MapStruct -->
-  <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
-  </dependency>
-  ```
-- Update the maven-compiler-plugin configuration to include MapStruct annotation processor:
-  ```xml
-  <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <configuration>
-          <annotationProcessorPaths>
-              <path>
-                  <groupId>org.projectlombok</groupId>
-                  <artifactId>lombok</artifactId>
-                  <version>${lombok.version}</version>
-              </path>
-              <path>
-                  <groupId>org.mapstruct</groupId>
-                  <artifactId>mapstruct-processor</artifactId>
-                  <version>1.5.5.Final</version>
-              </path>
-              <path>
-                  <groupId>org.projectlombok</groupId>
-                  <artifactId>lombok-mapstruct-binding</artifactId>
-                  <version>0.2.0</version>
-              </path>
-          </annotationProcessorPaths>
-      </configuration>
-  </plugin>
-  ```
+
+
 
 ### 2. Create DTO Class
 - Create a new package `guru.springframework.juniemvc.models`
